@@ -156,3 +156,149 @@ document.querySelectorAll('.filter-btn').forEach(button => {
     });
   });
 });
+
+// Skills progress bar animation
+const skillsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const progressBars = entry.target.querySelectorAll('.progress-line');
+            progressBars.forEach(bar => {
+                const width = bar.style.maxWidth;
+                bar.style.setProperty('--progress-width', width);
+                bar.style.animation = 'animate 2s ease-in-out forwards';
+            });
+        }
+    });
+}, {
+    threshold: 0.5,
+    rootMargin: '0px 0px -50px 0px'
+});
+
+const skillsSection = document.querySelector('.skill.section');
+if (skillsSection) {
+    skillsObserver.observe(skillsSection);
+}
+
+// Navbar background change on scroll
+window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    if (window.scrollY > 50) {
+        nav.style.background = 'rgba(255, 255, 255, 0.98)';
+        nav.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+    } else {
+        nav.style.background = 'rgba(255, 255, 255, 0.95)';
+        nav.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+    }
+});
+
+// Typing effect for hero section
+function typeWriter(element, text, speed = 100) {
+    let i = 0;
+    element.innerHTML = '';
+    
+    function typing() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typing, speed);
+        }
+    }
+    
+    typing();
+}
+
+// Initialize typing effect when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    const roleElement = document.querySelector('.typewriter span b');
+    if (roleElement) {
+        const text = roleElement.textContent;
+        setTimeout(() => {
+            typeWriter(roleElement, text, 100);
+        }, 2000);
+    }
+});
+
+// Form submission handling
+const contactForm = document.querySelector('.contact-form-container');
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(contactForm);
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        
+        // Show loading state
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        submitButton.disabled = true;
+        
+        try {
+            // Simulate form submission (replace with actual endpoint)
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Success message
+            submitButton.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
+            submitButton.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            contactForm.reset();
+            
+            // Reset button after 3 seconds
+            setTimeout(() => {
+                submitButton.innerHTML = originalText;
+                submitButton.style.background = '';
+                submitButton.disabled = false;
+            }, 3000);
+        } catch (error) {
+            // Error message
+            submitButton.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error. Try again.';
+            submitButton.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+            
+            // Reset button after 3 seconds
+            setTimeout(() => {
+                submitButton.innerHTML = originalText;
+                submitButton.style.background = '';
+                submitButton.disabled = false;
+            }, 3000);
+        }
+    });
+}
+
+// Add scroll reveal animation for elements
+const revealElements = document.querySelectorAll('.project-card, .skill, .about-col-1, .about-col-2');
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+});
+
+revealElements.forEach(element => {
+    element.style.opacity = '0';
+    element.style.transform = 'translateY(20px)';
+    element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    revealObserver.observe(element);
+});
+
+// Performance optimization: Debounce scroll events
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Apply debounce to scroll events
+const debouncedScrollHandler = debounce(() => {
+    // Scroll handling code here
+}, 16); // ~60fps
+
+window.addEventListener('scroll', debouncedScrollHandler);
